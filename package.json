@@ -1,0 +1,31 @@
+{
+  "name": "@niiko/sdk",
+  "version": "0.1.0",
+  "description": "Cliente generado de la API de acciones de niiko — expone verbos, no filas.",
+  "type": "module",
+  "main": "index.ts",
+  "types": "index.ts",
+  "license": "Apache-2.0",
+  "author": "Vorluno (https://vorluno.dev)",
+  "homepage": "https://developers.niiko.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vorluno/niiko-sdk-typescript.git"
+  },
+  "keywords": [
+    "niiko",
+    "api",
+    "sdk",
+    "crm",
+    "leads"
+  ],
+  "files": [
+    "index.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {},
+  "engines": {
+    "node": ">=18"
+  }
+}
