@@ -1,18 +1,19 @@
-// GENERADO desde el manifiesto de acciones de niiko — plan `9a8b80d285ff`. No editar a mano.
+// GENERATED from the niiko action manifest — plan `6c3240a7b22d`. Do not edit by hand.
 //
-// Cada método de aquí existe porque una acción está DECLARADA como pública. Si el servidor te contesta
-// `not_exposed`, es que esta copia del SDK es más nueva que el despliegue — no que te equivocaste de nombre.
+// Every method here exists because an action is DECLARED public. If the server answers `not_exposed`,
+// this copy of the SDK is newer than the deployment — not that you got the name wrong.
 
-/** Los tres desenlaces. Se ramifica una vez por `status` y ya sabes dónde estás. */
-export type Resultado<T> =
+/** The three outcomes. Branch once on `status` and you know where you are. */
+export type Result<T> =
   | { status: "done"; output: T; idempotencyKey: string }
-  /** Queda esperando una firma humana y puede terminar horas después. Te avisamos por webhook. */
+  /** Waits for a human signature and may complete hours later. You get notified by webhook. */
   | { status: "pending_approval"; proposalId: string | null; autonomy: string }
+  /** Not done. `reason` is a named reason and `detail.message`, when present, says what to do. */
   | { status: "refused"; reason: string; detail?: Record<string, unknown> };
 
 export class NiikoError extends Error {
-  constructor(readonly status: number, readonly cuerpo: unknown) {
-    super(`niiko: el servidor contestó ${status}`);
+  constructor(readonly status: number, readonly body: unknown) {
+    super(`niiko: the server answered ${status}`);
     this.name = "NiikoError";
   }
 }
@@ -33,7 +34,7 @@ export interface CreateLeadOutput {
   reason: "honeypot" | "invalid_email" | "disposable_email" | "invalid_identity" | null;
 }
 
-/** Los motivos que `miira.lead_create` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `miira.lead_create` declares. One outside this list is a server fault, not a state. */
 export type CreateLeadReason = "honeypot" | "invalid_email" | "disposable_email" | "invalid_identity";
 
 export interface LoggedCallInput {
@@ -49,7 +50,7 @@ export interface LoggedCallOutput {
   followUpId: string | null;
 }
 
-/** Los motivos que `crm.call_logged` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `crm.call_logged` declares. One outside this list is a server fault, not a state. */
 export type LoggedCallReason = "cliente_no_encontrado" | "cliente_ambiguo" | "demasiados_clientes" | "sin_permiso";
 
 export interface AssignedOwnerInput {
@@ -64,7 +65,7 @@ export interface AssignedOwnerOutput {
   ownerName: string;
 }
 
-/** Los motivos que `crm.owner_assigned` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `crm.owner_assigned` declares. One outside this list is a server fault, not a state. */
 export type AssignedOwnerReason = "cliente_no_encontrado" | "cliente_ambiguo" | "demasiados_clientes" | "persona_no_encontrada" | "persona_ambigua" | "sin_permiso";
 
 export interface MovedStageInput {
@@ -82,7 +83,7 @@ export interface MovedStageOutput {
   firstWon: boolean;
 }
 
-/** Los motivos que `crm.stage_moved` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `crm.stage_moved` declares. One outside this list is a server fault, not a state. */
 export type MovedStageReason = "cliente_no_encontrado" | "cliente_ambiguo" | "demasiados_clientes" | "sin_negocio_abierto" | "varios_negocios" | "etapa_no_encontrada" | "negocio_cerrado" | "ya_en_esa_etapa" | "sin_permiso";
 
 export interface ProposedInvoiceInput {
@@ -105,7 +106,7 @@ export interface ProposedInvoiceOutput {
   issueAt: "/kiipu/facturas";
 }
 
-/** Los motivos que `kiipu.invoice_proposed` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `kiipu.invoice_proposed` declares. One outside this list is a server fault, not a state. */
 export type ProposedInvoiceReason = "cliente_no_encontrado" | "cliente_ambiguo" | "demasiados_clientes" | "sin_permiso";
 
 export interface CreatedTaskInput {
@@ -121,7 +122,7 @@ export interface CreatedTaskOutput {
   dueAt: string;
 }
 
-/** Los motivos que `crm.task_created` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `crm.task_created` declares. One outside this list is a server fault, not a state. */
 export type CreatedTaskReason = "cliente_no_encontrado" | "cliente_ambiguo" | "demasiados_clientes" | "sin_permiso";
 
 export interface CreatedDealInput {
@@ -143,7 +144,7 @@ export interface CreatedDealOutput {
   openDeals: number;
 }
 
-/** Los motivos que `crm.deal_created` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `crm.deal_created` declares. One outside this list is a server fault, not a state. */
 export type CreatedDealReason = "cliente_no_encontrado" | "cliente_ambiguo" | "demasiados_clientes" | "etapa_no_encontrada" | "etapa_cerrada" | "persona_no_encontrada" | "persona_ambigua" | "sin_permiso";
 
 export interface AddedNoteInput {
@@ -157,7 +158,7 @@ export interface AddedNoteOutput {
   noteId: string;
 }
 
-/** Los motivos que `crm.note_added` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `crm.note_added` declares. One outside this list is a server fault, not a state. */
 export type AddedNoteReason = "cliente_no_encontrado" | "cliente_ambiguo" | "demasiados_clientes" | "sin_permiso";
 
 export interface AddedContactInput {
@@ -175,7 +176,7 @@ export interface AddedContactOutput {
   possibleDuplicate: boolean;
 }
 
-/** Los motivos que `crm.contact_added` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `crm.contact_added` declares. One outside this list is a server fault, not a state. */
 export type AddedContactReason = "cliente_no_encontrado" | "cliente_ambiguo" | "demasiados_clientes" | "sin_permiso";
 
 export interface QuotedBroadcastInput {
@@ -192,7 +193,7 @@ export interface QuotedBroadcastOutput {
   expiresAt: string | null;
 }
 
-/** Los motivos que `miira.broadcast_quoted` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `miira.broadcast_quoted` declares. One outside this list is a server fault, not a state. */
 export type QuotedBroadcastReason = "plantilla_invalida" | "tarifas_vencidas" | "sin_permiso";
 
 export interface SentBroadcastInput {
@@ -204,7 +205,7 @@ export interface SentBroadcastOutput {
   costUsd: string;
 }
 
-/** Los motivos que `miira.broadcast_sent` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `miira.broadcast_sent` declares. One outside this list is a server fault, not a state. */
 export type SentBroadcastReason = "presupuesto_invalido" | "presupuesto_vencido" | "presupuesto_cambiado" | "plantilla_invalida" | "tarifas_vencidas" | "sin_permiso";
 
 export interface VoidedDraftInput {
@@ -220,7 +221,7 @@ export interface VoidedDraftOutput {
   status: "void";
 }
 
-/** Los motivos que `kiipu.draft_voided` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `kiipu.draft_voided` declares. One outside this list is a server fault, not a state. */
 export type VoidedDraftReason = "cliente_no_encontrado" | "cliente_ambiguo" | "demasiados_clientes" | "borrador_no_encontrado" | "varios_borradores" | "no_es_borrador" | "sin_permiso";
 
 export interface ReportedPaymentInput {
@@ -241,11 +242,11 @@ export interface ReportedPaymentOutput {
   reviewAt: "/kiipu/aprobaciones";
 }
 
-/** Los motivos que `kiipu.payment_reported` declara. Uno fuera de esta lista es un fallo del servidor, no un estado. */
+/** The reasons `kiipu.payment_reported` declares. One outside this list is a server fault, not a state. */
 export type ReportedPaymentReason = "cliente_no_encontrado" | "cliente_ambiguo" | "demasiados_clientes" | "sin_factura_abierta" | "varias_facturas" | "factura_no_encontrada" | "sin_permiso";
 
-export interface NiikoOpciones {
-  /** La clave del workspace. Se ve UNA vez, al crearla en Ajustes. */
+export interface NiikoOptions {
+  /** The workspace API key. Shown ONCE, when created in Settings. */
   apiKey: string;
   baseUrl?: string;
   fetch?: typeof fetch;
@@ -256,172 +257,172 @@ export class Niiko {
   #baseUrl: string;
   #fetch: typeof fetch;
 
-  constructor(o: NiikoOpciones) {
-    if (!o.apiKey) throw new Error("niiko: falta apiKey");
+  constructor(o: NiikoOptions) {
+    if (!o.apiKey) throw new Error("niiko: apiKey is required");
     this.#apiKey = o.apiKey;
     this.#baseUrl = (o.baseUrl ?? "https://niiko.org").replace(/\/+$/, "");
     this.#fetch = o.fetch ?? fetch;
   }
 
-  async #ejercer<T>(accion: string, cuerpo: unknown, idempotencyKey?: string): Promise<Resultado<T>> {
-    const r = await this.#fetch(`${this.#baseUrl}/api/v1/actions/${accion}`, {
+  async #exercise<T>(action: string, body: unknown, idempotencyKey?: string): Promise<Result<T>> {
+    const r = await this.#fetch(`${this.#baseUrl}/api/v1/actions/${action}`, {
       method: "POST",
       headers: {
         authorization: `Bearer ${this.#apiKey}`,
         "content-type": "application/json",
-        // Mándala SIEMPRE que puedas: un reintento por timeout con la misma clave no vuelve a ejecutar.
+        // Send it WHENEVER you can: a timeout retry with the same key does not execute again.
         ...(idempotencyKey ? { "idempotency-key": idempotencyKey } : {}),
       },
-      body: JSON.stringify(cuerpo),
+      body: JSON.stringify(body),
     });
 
     const json = await r.json().catch(() => null);
-    // Una negativa NO es una excepción: es un estado del producto, y quien llama tiene que poder ramificar
-    // sobre ella. Lo que sí revienta es lo que no se puede leer — ahí no hay decisión que tomar.
-    if (json && typeof json === "object" && "status" in json) return json as Resultado<T>;
+    // A refusal is NOT an exception: it is a product state, and the caller must be able to branch on it.
+    // What does throw is what cannot be read — there is no decision to make there.
+    if (json && typeof json === "object" && "status" in json) return json as Result<T>;
     throw new NiikoError(r.status, json);
   }
 
   /**
-   * Crea un lead nuevo en el CRM del workspace a partir de sus datos de contacto. Si ya existe uno que encaja, no lo duplica: contesta `ambiguous` con los candidatos.
+   * Creates a new lead in the workspace CRM from its contact details. If a matching one already exists it is not duplicated: the reply is `ambiguous` with the candidates.
    *
-   * `miira.lead_create` v1 — alcance `miira.lead_create@1`.
+   * `miira.lead_create` v1 — scope `miira.lead_create@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async createLead(input: CreateLeadInput, idempotencyKey?: string): Promise<Resultado<CreateLeadOutput>> {
-    return this.#ejercer<CreateLeadOutput>("miira.lead_create", input, idempotencyKey);
+  async createLead(input: CreateLeadInput, idempotencyKey?: string): Promise<Result<CreateLeadOutput>> {
+    return this.#exercise<CreateLeadOutput>("miira.lead_create", input, idempotencyKey);
   }
 
   /**
-   * Anota en la ficha de un cliente, dicho por su nombre, lo que se habló en una llamada; opcionalmente deja creado el seguimiento con su fecha. No lee nada ni llama a nadie.
+   * Logs what was discussed in a call on a client's record, naming the client; optionally creates the follow-up with its date. Reads nothing and calls no one.
    *
-   * `crm.call_logged` v1 — alcance `crm.call_logged@1`.
+   * `crm.call_logged` v1 — scope `crm.call_logged@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async loggedCall(input: LoggedCallInput, idempotencyKey?: string): Promise<Resultado<LoggedCallOutput>> {
-    return this.#ejercer<LoggedCallOutput>("crm.call_logged", input, idempotencyKey);
+  async loggedCall(input: LoggedCallInput, idempotencyKey?: string): Promise<Result<LoggedCallOutput>> {
+    return this.#exercise<LoggedCallOutput>("crm.call_logged", input, idempotencyKey);
   }
 
   /**
-   * Cambia de quién es un cliente, diciendo el nombre del cliente y el nombre (o correo) del miembro del equipo. Si alguno de los dos es ambiguo, se niega con la lista.
+   * Changes who owns a client, naming the client and the team member (by name or email). If either is ambiguous it refuses with the list.
    *
-   * `crm.owner_assigned` v1 — alcance `crm.owner_assigned@1`.
+   * `crm.owner_assigned` v1 — scope `crm.owner_assigned@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async assignedOwner(input: AssignedOwnerInput, idempotencyKey?: string): Promise<Resultado<AssignedOwnerOutput>> {
-    return this.#ejercer<AssignedOwnerOutput>("crm.owner_assigned", input, idempotencyKey);
+  async assignedOwner(input: AssignedOwnerInput, idempotencyKey?: string): Promise<Result<AssignedOwnerOutput>> {
+    return this.#exercise<AssignedOwnerOutput>("crm.owner_assigned", input, idempotencyKey);
   }
 
   /**
-   * Mueve el negocio abierto de un cliente a otra etapa del pipeline, diciendo el nombre del cliente y el de la etapa. No crea negocios: sin uno abierto se niega, y con varios se niega con la lista.
+   * Moves a client's open deal to another pipeline stage, naming the client and the stage. Creates no deals: with no open deal it refuses, and with several it refuses with the list.
    *
-   * `crm.stage_moved` v1 — alcance `crm.stage_moved@1`.
+   * `crm.stage_moved` v1 — scope `crm.stage_moved@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async movedStage(input: MovedStageInput, idempotencyKey?: string): Promise<Resultado<MovedStageOutput>> {
-    return this.#ejercer<MovedStageOutput>("crm.stage_moved", input, idempotencyKey);
+  async movedStage(input: MovedStageInput, idempotencyKey?: string): Promise<Result<MovedStageOutput>> {
+    return this.#exercise<MovedStageOutput>("crm.stage_moved", input, idempotencyKey);
   }
 
   /**
-   * Deja preparada una factura como BORRADOR para un cliente dicho por su nombre, con sus líneas e impuestos. NO la emite, NO la numera y NO cuenta como deuda: una persona la revisa y la emite en Kiipu. No crea el cliente si no existe.
+   * Prepares an invoice as a DRAFT for a client named by name, with its lines and taxes. Does NOT issue it, does NOT number it and does NOT count as debt: a person reviews and issues it in Kiipu. Does not create the client if it does not exist.
    *
-   * `kiipu.invoice_proposed` v1 — alcance `kiipu.invoice_proposed@1`.
+   * `kiipu.invoice_proposed` v1 — scope `kiipu.invoice_proposed@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async proposedInvoice(input: ProposedInvoiceInput, idempotencyKey?: string): Promise<Resultado<ProposedInvoiceOutput>> {
-    return this.#ejercer<ProposedInvoiceOutput>("kiipu.invoice_proposed", input, idempotencyKey);
+  async proposedInvoice(input: ProposedInvoiceInput, idempotencyKey?: string): Promise<Result<ProposedInvoiceOutput>> {
+    return this.#exercise<ProposedInvoiceOutput>("kiipu.invoice_proposed", input, idempotencyKey);
   }
 
   /**
-   * Crea un recordatorio (tarea con fecha y hora) sobre un cliente dicho por su nombre. No anota una llamada: para eso está crm.call_logged. No crea el cliente si no existe.
+   * Creates a reminder (a task with date and time) on a client named by name. Does not log a call: that is crm.call_logged. Does not create the client if it does not exist.
    *
-   * `crm.task_created` v1 — alcance `crm.task_created@1`.
+   * `crm.task_created` v1 — scope `crm.task_created@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async createdTask(input: CreatedTaskInput, idempotencyKey?: string): Promise<Resultado<CreatedTaskOutput>> {
-    return this.#ejercer<CreatedTaskOutput>("crm.task_created", input, idempotencyKey);
+  async createdTask(input: CreatedTaskInput, idempotencyKey?: string): Promise<Result<CreatedTaskOutput>> {
+    return this.#exercise<CreatedTaskOutput>("crm.task_created", input, idempotencyKey);
   }
 
   /**
-   * Abre un negocio nuevo en el pipeline para un cliente dicho por su nombre, con título, valor opcional en USD, etapa opcional (por nombre; sin ella, la primera) y responsable opcional. No comprueba si ya tiene otros abiertos: devuelve cuántos quedan para que se vea un duplicado. No lo gana ni lo pierde: eso es crm.stage_moved.
+   * Opens a new deal in the pipeline for a client named by name, with a title, an optional value in USD, an optional stage (by name; without it, the first one) and an optional owner. Does not check for other open deals: it returns how many remain so a duplicate is visible. Does not win or lose it: that is crm.stage_moved.
    *
-   * `crm.deal_created` v1 — alcance `crm.deal_created@1`.
+   * `crm.deal_created` v1 — scope `crm.deal_created@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async createdDeal(input: CreatedDealInput, idempotencyKey?: string): Promise<Resultado<CreatedDealOutput>> {
-    return this.#ejercer<CreatedDealOutput>("crm.deal_created", input, idempotencyKey);
+  async createdDeal(input: CreatedDealInput, idempotencyKey?: string): Promise<Result<CreatedDealOutput>> {
+    return this.#exercise<CreatedDealOutput>("crm.deal_created", input, idempotencyKey);
   }
 
   /**
-   * Guarda una nota en la ficha de un cliente dicho por su nombre: algo que hay que saber la próxima vez, sin llamada ni fecha. Para una llamada está crm.call_logged; para un recordatorio con fecha, crm.task_created.
+   * Saves a note on a client's record, naming the client: something to know next time, with no call and no date. For a call use crm.call_logged; for a dated reminder, crm.task_created.
    *
-   * `crm.note_added` v1 — alcance `crm.note_added@1`.
+   * `crm.note_added` v1 — scope `crm.note_added@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async addedNote(input: AddedNoteInput, idempotencyKey?: string): Promise<Resultado<AddedNoteOutput>> {
-    return this.#ejercer<AddedNoteOutput>("crm.note_added", input, idempotencyKey);
+  async addedNote(input: AddedNoteInput, idempotencyKey?: string): Promise<Result<AddedNoteOutput>> {
+    return this.#exercise<AddedNoteOutput>("crm.note_added", input, idempotencyKey);
   }
 
   /**
-   * Añade una persona (nombre, y opcionalmente correo, teléfono y cargo) a la ficha de un cliente dicho por su nombre. No la hace contacto principal ni crea el cliente. Si ya había alguien con ese correo o teléfono, lo dice en la respuesta pero no lo impide.
+   * Adds a person (name, and optionally email, phone and role) to a client's record, naming the client. Does not make them the primary contact and does not create the client. If someone with that email or phone already existed, the reply says so but does not block it.
    *
-   * `crm.contact_added` v1 — alcance `crm.contact_added@1`.
+   * `crm.contact_added` v1 — scope `crm.contact_added@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async addedContact(input: AddedContactInput, idempotencyKey?: string): Promise<Resultado<AddedContactOutput>> {
-    return this.#ejercer<AddedContactOutput>("crm.contact_added", input, idempotencyKey);
+  async addedContact(input: AddedContactInput, idempotencyKey?: string): Promise<Result<AddedContactOutput>> {
+    return this.#exercise<AddedContactOutput>("crm.contact_added", input, idempotencyKey);
   }
 
   /**
-   * Presupuesta mandar el MISMO mensaje de WhatsApp a varios clientes dichos por su nombre (hasta 50). NO envía nada: dice, por cliente, si le llega el texto tal cual (ventana de 24 h abierta, gratis), si hace falta una plantilla aprobada y cuánto cuesta, o por qué no se le puede escribir. Devuelve un presupuesto firmado que vale 15 minutos; para enviar, llama a miira.broadcast_sent con él. Enséñale el presupuesto a la persona antes.
+   * Quotes sending the SAME WhatsApp message to several clients named by name (up to 50). Sends NOTHING: per client, it says whether the text goes as-is (24-hour window open, free), whether an approved template is needed and what it costs, or why that client cannot be messaged. Returns a signed quote valid for 15 minutes; to send, call miira.broadcast_sent with it. Show the quote to the person first.
    *
-   * `miira.broadcast_quoted` v1 — alcance `miira.broadcast_quoted@1`.
+   * `miira.broadcast_quoted` v1 — scope `miira.broadcast_quoted@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async quotedBroadcast(input: QuotedBroadcastInput, idempotencyKey?: string): Promise<Resultado<QuotedBroadcastOutput>> {
-    return this.#ejercer<QuotedBroadcastOutput>("miira.broadcast_quoted", input, idempotencyKey);
+  async quotedBroadcast(input: QuotedBroadcastInput, idempotencyKey?: string): Promise<Result<QuotedBroadcastOutput>> {
+    return this.#exercise<QuotedBroadcastOutput>("miira.broadcast_quoted", input, idempotencyKey);
   }
 
   /**
-   * Envía la difusión de WhatsApp presupuestada por miira.broadcast_quoted, exactamente a quienes y como dijo el presupuesto. Si algo cambió (ventana, consentimiento, tarifa) se niega con el presupuesto nuevo para confirmarlo otra vez. Cuesta dinero cuando hay plantillas: no lo llames sin que la persona haya visto el coste.
+   * Sends the WhatsApp broadcast quoted by miira.broadcast_quoted, exactly to whom and how the quote said. If anything changed (window, consent, rate) it refuses with a new quote to confirm again. Costs money when templates are involved: do not call it without the person having seen the cost.
    *
-   * `miira.broadcast_sent` v1 — alcance `miira.broadcast_sent@1`.
+   * `miira.broadcast_sent` v1 — scope `miira.broadcast_sent@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async sentBroadcast(input: SentBroadcastInput, idempotencyKey?: string): Promise<Resultado<SentBroadcastOutput>> {
-    return this.#ejercer<SentBroadcastOutput>("miira.broadcast_sent", input, idempotencyKey);
+  async sentBroadcast(input: SentBroadcastInput, idempotencyKey?: string): Promise<Result<SentBroadcastOutput>> {
+    return this.#exercise<SentBroadcastOutput>("miira.broadcast_sent", input, idempotencyKey);
   }
 
   /**
-   * Anula un BORRADOR de factura (uno creado con kiipu.invoice_proposed y todavía no emitido), por su id o por el nombre del cliente si es su único borrador. No anula facturas emitidas: eso es de una persona en Kiipu.
+   * Voids a DRAFT invoice (one created with kiipu.invoice_proposed and not yet issued), by its id or by the client's name when it is their only draft. Does not void issued invoices: that is for a person in Kiipu.
    *
-   * `kiipu.draft_voided` v1 — alcance `kiipu.draft_voided@1`.
+   * `kiipu.draft_voided` v1 — scope `kiipu.draft_voided@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async voidedDraft(input: VoidedDraftInput, idempotencyKey?: string): Promise<Resultado<VoidedDraftOutput>> {
-    return this.#ejercer<VoidedDraftOutput>("kiipu.draft_voided", input, idempotencyKey);
+  async voidedDraft(input: VoidedDraftInput, idempotencyKey?: string): Promise<Result<VoidedDraftOutput>> {
+    return this.#exercise<VoidedDraftOutput>("kiipu.draft_voided", input, idempotencyKey);
   }
 
   /**
-   * Deja en la cola de aprobación de Kiipu el aviso de que un cliente (por su nombre) pagó cierto monto de una factura abierta. NO aplica el pago ni toca saldos: una persona lo revisa contra el banco y lo aplica. Si el cliente tiene varias facturas abiertas hay que decir el número.
+   * Leaves in the Kiipu approval queue the notice that a client (by name) paid a given amount of an open invoice. Does NOT apply the payment and touches no balances: a person checks it against the bank and applies it. If the client has several open invoices the number must be given.
    *
-   * `kiipu.payment_reported` v1 — alcance `kiipu.payment_reported@1`.
+   * `kiipu.payment_reported` v1 — scope `kiipu.payment_reported@1`.
    *
-   * Necesita **dos** permisos: una clave con ese alcance, y que el workspace haya encendido la acción.
+   * Needs **two** permissions: a key with that scope, and the workspace having switched the action on.
    */
-  async reportedPayment(input: ReportedPaymentInput, idempotencyKey?: string): Promise<Resultado<ReportedPaymentOutput>> {
-    return this.#ejercer<ReportedPaymentOutput>("kiipu.payment_reported", input, idempotencyKey);
+  async reportedPayment(input: ReportedPaymentInput, idempotencyKey?: string): Promise<Result<ReportedPaymentOutput>> {
+    return this.#exercise<ReportedPaymentOutput>("kiipu.payment_reported", input, idempotencyKey);
   }
 }

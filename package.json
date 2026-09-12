@@ -1,16 +1,32 @@
 {
-  "name": "@niiko/sdk",
+  "name": "@vorluno/niiko-sdk",
   "version": "0.1.0",
-  "description": "Cliente generado de la API de acciones de niiko — expone verbos, no filas.",
+  "description": "Generated client for the niiko actions API — it exposes verbs, not rows.",
   "type": "module",
-  "main": "index.ts",
-  "types": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  },
   "license": "Apache-2.0",
   "author": "Vorluno (https://vorluno.dev)",
   "homepage": "https://developers.niiko.org",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vorluno/niiko-sdk-typescript.git"
+    "url": "git+https://github.com/vorluno/niiko-sdk-typescript.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vorluno/niiko-sdk-typescript/issues"
   },
   "keywords": [
     "niiko",
@@ -20,6 +36,7 @@
     "leads"
   ],
   "files": [
+    "dist",
     "index.ts",
     "README.md",
     "LICENSE"
