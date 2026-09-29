@@ -2,10 +2,10 @@
 
 The TypeScript client for the niiko actions API. One typed method per action, three outcomes, zero dependencies.
 
-[![npm](https://img.shields.io/npm/v/%40vorluno%2Fniiko-sdk?style=flat-square&color=0969da)](https://www.npmjs.com/package/@vorluno/niiko-sdk) [![node](https://img.shields.io/badge/node-%3E%3D18-2C6440?style=flat-square)](https://nodejs.org) ![dependencies](https://img.shields.io/badge/dependencies-0-2C6440?style=flat-square) ![license](https://img.shields.io/badge/license-Apache--2.0-0969da?style=flat-square) [![generated](https://img.shields.io/badge/generated_from_plan-6c3240a7b22d-555?style=flat-square)](https://developers.niiko.org)
+[![npm](https://img.shields.io/npm/v/%40vorluno%2Fniiko-sdk?style=flat-square&color=0969da)](https://www.npmjs.com/package/@vorluno/niiko-sdk) [![node](https://img.shields.io/badge/node-%3E%3D18-2C6440?style=flat-square)](https://nodejs.org) ![dependencies](https://img.shields.io/badge/dependencies-0-2C6440?style=flat-square) ![license](https://img.shields.io/badge/license-Apache--2.0-0969da?style=flat-square) [![generated](https://img.shields.io/badge/generated_from_plan-88185e0c8c12-555?style=flat-square)](https://developers.niiko.org)
 
 **A client that knows the actions it was written for is stale the day a new one opens.** This one is
-generated from the niiko action manifest, in the same run as the Python client and the reference (plan `6c3240a7b22d`),
+generated from the niiko action manifest, in the same run as the Python client and the reference (plan `88185e0c8c12`),
 so an action that opens on the server appears here as a typed method at once — and nothing in this repository
 is edited by hand.
 
