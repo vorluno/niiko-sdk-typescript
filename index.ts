@@ -1,4 +1,4 @@
-// GENERATED from the niiko action manifest — plan `88185e0c8c12`. Do not edit by hand.
+// GENERATED from the niiko action manifest — plan `dcf053ee9096`. Do not edit by hand.
 //
 // Every method here exists because an action is DECLARED public. If the server answers `not_exposed`,
 // this copy of the SDK is newer than the deployment — not that you got the name wrong.
@@ -184,10 +184,11 @@ export interface QuotedBroadcastInput {
   message: string;
   template?: string;
   templateValues?: string[];
+  purpose?: "notice" | "promotion";
 }
 
 export interface QuotedBroadcastOutput {
-  rows: { client: string; clientId: string | null; clientName: string | null; outcome: "free_text" | "template" | "needs_template" | "no_phone" | "suppressed" | "consent_revoked" | "no_marketing_consent" | "quiet_hours" | "not_found" | "ambiguous" | "too_many"; costUsd: string | null; candidates: string[] }[];
+  rows: { client: string; clientId: string | null; clientName: string | null; outcome: "free_text" | "template" | "needs_template" | "no_phone" | "suppressed" | "consent_revoked" | "no_marketing_consent" | "quiet_hours" | "not_found" | "ambiguous" | "too_many" | "us_moratorium"; costUsd: string | null; candidates: string[] }[];
   totals: { freeText: number; template: number; skipped: number; costUsd: string };
   quote: string | null;
   expiresAt: string | null;
@@ -245,23 +246,201 @@ export interface ReportedPaymentOutput {
 /** The reasons `kiipu.payment_reported` declares. One outside this list is a server fault, not a state. */
 export type ReportedPaymentReason = "cliente_no_encontrado" | "cliente_ambiguo" | "demasiados_clientes" | "sin_factura_abierta" | "varias_facturas" | "factura_no_encontrada" | "sin_permiso";
 
+/** A read has TWO outcomes: it changes nothing, so it never waits for a signature. */
+export type ReadResult<T> =
+  | { status: "done"; output: T }
+  /** Not read. `reason` is a named reason and `detail.message`, when present, says what to do. */
+  | { status: "refused"; reason: string; detail?: Record<string, unknown> };
+
+export interface SearchClientsInput {
+  search?: string;
+  status?: "lead" | "qualified" | "client" | "churned" | "reactivated" | "completed";
+  tag?: string;
+  createdSince?: string;
+}
+
+export interface SearchClientsOutput {
+  total: number;
+  totalIsMinimum: boolean;
+  byStatus: Record<string, unknown>;
+  clients: { name: string; status: "lead" | "qualified" | "client" | "churned" | "reactivated" | "completed"; owner: string | null; createdOn: string }[];
+}
+
+/** The reasons `crm.clients_search` declares. One outside this list is a server fault, not a state. */
+export type SearchClientsReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person";
+
+export interface GetCollectionsInput {
+
+}
+
+export interface GetCollectionsOutput {
+  currency: string;
+  outstandingTotal: string;
+  openInvoices: number;
+  overdueTotal: string;
+  agingBuckets: { bucket: "d1_30" | "d31_60" | "d61_90" | "d90_plus"; amount: string; installments: number; clients: number }[];
+  debtors: { client: string | null; overdue: string; oldestDueOn: string; daysOverdue: number; bucket: "d1_30" | "d31_60" | "d61_90" | "d90_plus"; invoices: number }[];
+  upcoming: { client: string | null; invoice: string | null; dueOn: string; amount: string }[];
+  incomplete: boolean;
+}
+
+/** The reasons `kiipu.collections_get` declares. One outside this list is a server fault, not a state. */
+export type GetCollectionsReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person";
+
+export interface GetCollectedMonthInput {
+
+}
+
+export interface GetCollectedMonthOutput {
+  currency: string;
+  collectedThisMonth: string;
+  periodStart: string;
+  periodEnd: string;
+  collectedSamePeriodLastMonth: string;
+  outstandingTotal: string;
+  openInvoices: number;
+  incomplete: boolean;
+}
+
+/** The reasons `kiipu.collected_month_get` declares. One outside this list is a server fault, not a state. */
+export type GetCollectedMonthReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person";
+
+export interface ListClientInvoicesInput {
+  client: string;
+}
+
+export interface ListClientInvoicesOutput {
+  client: string;
+  owedTotal: string;
+  invoices: { number: string | null; status: string; total: string; balance: string; currency: string; createdOn: string; dueOn: string | null; daysOverdue: number | null }[];
+  payments: { invoice: string | null; paidOn: string; amount: string; method: string; reversed: boolean }[];
+}
+
+/** The reasons `kiipu.client_invoices_list` declares. One outside this list is a server fault, not a state. */
+export type ListClientInvoicesReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person" | "ambiguous" | "not_found";
+
+export interface GetConversationsWaitingInput {
+
+}
+
+export interface GetConversationsWaitingOutput {
+  handledByAPerson: number;
+  waitingForReply: number;
+  thresholdMinutes: number;
+  waitingOverThreshold: number;
+  longestWaitMinutes: number | null;
+}
+
+/** The reasons `miira.conversations_waiting_get` declares. One outside this list is a server fault, not a state. */
+export type GetConversationsWaitingReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person";
+
+export interface GetAgendaInput {
+  period?: "today" | "this_week" | "next_week" | "this_month";
+}
+
+export interface GetAgendaOutput {
+  period: "today" | "this_week" | "next_week" | "this_month";
+  today: string;
+  periodStart: string;
+  periodEnd: string;
+  timeZone: string;
+  appointments: number;
+  byStatus: Record<string, unknown>;
+  totalIsMinimum: boolean;
+  first: { date: string; time: string; client: string | null; resource: string | null; status: string }[];
+}
+
+/** The reasons `ciita.agenda_get` declares. One outside this list is a server fault, not a state. */
+export type GetAgendaReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person";
+
+export interface GetFunnelInput {
+
+}
+
+export interface GetFunnelOutput {
+  leadsInFunnel: number;
+  totalIsMinimum: boolean;
+  byStage: { stage: string; qualified: boolean; leads: number }[];
+  qualified: number;
+  enteredThisMonth: number;
+  recent: { name: string | null; stage: string | null; enteredOn: string }[];
+}
+
+/** The reasons `miira.funnel_get` declares. One outside this list is a server fault, not a state. */
+export type GetFunnelReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person";
+
+export interface GetMonthResultInput {
+
+}
+
+export interface GetMonthResultOutput {
+  currency: string;
+  ledgerBalanced: boolean;
+  month: string | null;
+  noActivityThisMonth: boolean;
+  thisMonth: { revenue: string; expenses: string; netIncome: string; closed: boolean; topRevenue: { account: string; amount: string }[]; topExpenses: { account: string; amount: string }[] } | null;
+  previousMonth: { month: string; revenue: string; expenses: string; netIncome: string } | null;
+}
+
+/** The reasons `kiipu.month_result_get` declares. One outside this list is a server fault, not a state. */
+export type GetMonthResultReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person";
+
+export interface GetMonthSummaryInput {
+
+}
+
+export interface GetMonthSummaryOutput {
+  periodStart: string;
+  periodEnd: string;
+  newClients: { total: number; totalIsMinimum: boolean; byStatus: Record<string, unknown> } | null;
+  collected: { thisMonth: string; samePeriodLastMonth: string; outstanding: string; openInvoices: number; currency: string } | null;
+  proposals: { sent: number; accepted: number; acceptedUsd: string; awaitingReply: number; awaitingReplyUsd: string; totalIsMinimum: boolean } | null;
+  dealsWon: { count: number; totalUsd: string } | null;
+  appointments: { count: number; byStatus: Record<string, unknown>; totalIsMinimum: boolean } | null;
+  monthResult: { currency: string; ledgerBalanced: boolean; month: string | null; noActivityThisMonth: boolean; thisMonth: { revenue: string; expenses: string; netIncome: string; closed: boolean; topRevenue: { account: string; amount: string }[]; topExpenses: { account: string; amount: string }[] } | null; previousMonth: { month: string; revenue: string; expenses: string; netIncome: string } | null } | null;
+  unavailable: { piece: "new_clients" | "collected" | "proposals" | "deals_won" | "appointments" | "month_result"; reason: "role" | "off" }[];
+}
+
+/** The reasons `crm.month_summary_get` declares. One outside this list is a server fault, not a state. */
+export type GetMonthSummaryReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person";
+
 export interface NiikoOptions {
-  /** The workspace API key. Shown ONCE, when created in Settings. */
-  apiKey: string;
+  /** The workspace API key, for ACTIONS. Shown ONCE, when created in Settings. */
+  apiKey?: string;
+  /**
+   * An OAuth access token: what READS need. A read is done on behalf of a person, with their role, so an API key
+   * cannot read (it gets `reads_need_a_person`). A token also exercises the actions it was granted.
+   */
+  accessToken?: string;
   baseUrl?: string;
   fetch?: typeof fetch;
 }
 
 export class Niiko {
   #apiKey: string;
+  #accessToken: string;
   #baseUrl: string;
   #fetch: typeof fetch;
 
   constructor(o: NiikoOptions) {
-    if (!o.apiKey) throw new Error("niiko: apiKey is required");
-    this.#apiKey = o.apiKey;
+    if (!o.apiKey && !o.accessToken) throw new Error("niiko: apiKey or accessToken is required");
+    // With only one of the two, it is used for everything: the server says which one each call needs.
+    this.#apiKey = (o.apiKey ?? o.accessToken)!;
+    this.#accessToken = (o.accessToken ?? o.apiKey)!;
     this.#baseUrl = (o.baseUrl ?? "https://niiko.org").replace(/\/+$/, "");
     this.#fetch = o.fetch ?? fetch;
+  }
+
+  async #read<T>(read: string, body: unknown): Promise<ReadResult<T>> {
+    // No idempotency key: a read has no effect to duplicate.
+    const r = await this.#fetch(`${this.#baseUrl}/api/v1/reads/${read}`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${this.#accessToken}`, "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const json = await r.json().catch(() => null);
+    if (json && typeof json === "object" && "status" in json) return json as ReadResult<T>;
+    throw new NiikoError(r.status, json);
   }
 
   async #exercise<T>(action: string, body: unknown, idempotencyKey?: string): Promise<Result<T>> {
@@ -383,7 +562,7 @@ export class Niiko {
   }
 
   /**
-   * Quotes sending the SAME WhatsApp message to several clients named by name (up to 50). Sends NOTHING: per client, it says whether the text goes as-is (24-hour window open, free), whether an approved template is needed and what it costs, or why that client cannot be messaged. Returns a signed quote valid for 15 minutes; to send, call miira.broadcast_sent with it. Show the quote to the person first.
+   * Quotes sending the SAME WhatsApp message to several clients named by name (up to 50). Sends NOTHING: per client, it says whether the text goes as-is (24-hour window open, free), whether an approved template is needed and what it costs, or why that client cannot be messaged. Returns a signed quote valid for 15 minutes; to send, call miira.broadcast_sent with it. Show the quote to the person first. Optional `purpose`: `notice` (default) is the usual notice; `promotion` NEVER sends free text, even with the window open, and requires an approved MARKETING template (otherwise plantilla_invalida): it only reaches clients with granted marketing consent (no_marketing_consent otherwise) and leaves US numbers out (us_moratorium). In a promotion `message` is never sent: what goes is the template with its `templateValues`. Use `promotion` for offers and campaigns, never for a reply or a notice.
    *
    * `miira.broadcast_quoted` v1 — scope `miira.broadcast_quoted@1`.
    *
@@ -424,5 +603,113 @@ export class Niiko {
    */
   async reportedPayment(input: ReportedPaymentInput, idempotencyKey?: string): Promise<Result<ReportedPaymentOutput>> {
     return this.#exercise<ReportedPaymentOutput>("kiipu.payment_reported", input, idempotencyKey);
+  }
+
+  /**
+   * Counts and finds the workspace's CRM clients, optionally by part of the name, status, tag or creation date. Returns the total, the total per status and up to 15 clients with status, owner and creation day. No contact details and no notes.
+   *
+   * `crm.clients_search` v1 — scope `crm.clients_search@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async searchClients(input: SearchClientsInput = {}): Promise<ReadResult<SearchClientsOutput>> {
+    return this.#read<SearchClientsOutput>("crm.clients_search", input);
+  }
+
+  /**
+   * Reads what is owed: the outstanding total, what is overdue by age bucket, the 15 clients who owe the most with their overdue amount and since when, and the next installments due. Changes nothing and contacts no one.
+   *
+   * `kiipu.collections_get` v1 — scope `kiipu.collections_get@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async getCollections(input: GetCollectionsInput = {}): Promise<ReadResult<GetCollectionsOutput>> {
+    return this.#read<GetCollectionsOutput>("kiipu.collections_get", input);
+  }
+
+  /**
+   * Reads how much was collected this month so far (as the ledger recorded it), the same stretch of last month to compare, and what is still outstanding. Does not say who owes: that is kiipu.collections_get.
+   *
+   * `kiipu.collected_month_get` v1 — scope `kiipu.collected_month_get@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async getCollectedMonth(input: GetCollectedMonthInput = {}): Promise<ReadResult<GetCollectedMonthOutput>> {
+    return this.#read<GetCollectedMonthOutput>("kiipu.collected_month_get", input);
+  }
+
+  /**
+   * Lists the latest invoices and payments of ONE client named by name: number, status, total, balance, and when and how they paid. With several matches it refuses with `ambiguous` and the candidates; with none, `not_found`.
+   *
+   * `kiipu.client_invoices_list` v1 — scope `kiipu.client_invoices_list@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async listClientInvoices(input: ListClientInvoicesInput): Promise<ReadResult<ListClientInvoicesOutput>> {
+    return this.#read<ListClientInvoicesOutput>("kiipu.client_invoices_list", input);
+  }
+
+  /**
+   * Reads how many conversations a team member is handling, how many are waiting for a reply, how many have waited longer than the workspace threshold and the longest wait. Counts only: no names and no messages.
+   *
+   * `miira.conversations_waiting_get` v1 — scope `miira.conversations_waiting_get@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async getConversationsWaiting(input: GetConversationsWaitingInput = {}): Promise<ReadResult<GetConversationsWaitingOutput>> {
+    return this.#read<GetConversationsWaitingOutput>("miira.conversations_waiting_get", input);
+  }
+
+  /**
+   * Reads the appointments of today, this week, next week or this month: how many per status and the first 15 with day, time in the workspace time zone, client, resource and status. Books nothing.
+   *
+   * `ciita.agenda_get` v1 — scope `ciita.agenda_get@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async getAgenda(input: GetAgendaInput = {}): Promise<ReadResult<GetAgendaOutput>> {
+    return this.#read<GetAgendaOutput>("ciita.agenda_get", input);
+  }
+
+  /**
+   * Reads the Miira lead funnel by stage (the same rule as the board), how many leads are qualified, how many came in this month and the 15 most recent with their stage. Clients who already bought are in the CRM, not here.
+   *
+   * `miira.funnel_get` v1 — scope `miira.funnel_get@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async getFunnel(input: GetFunnelInput = {}): Promise<ReadResult<GetFunnelOutput>> {
+    return this.#read<GetFunnelOutput>("miira.funnel_get", input);
+  }
+
+  /**
+   * Reads this month's income statement from the ledger: revenue, expenses, net income, the accounts that weigh most and last month to compare. If the ledger does not balance right now it gives no figures; with no entries it says so, never zero.
+   *
+   * `kiipu.month_result_get` v1 — scope `kiipu.month_result_get@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async getMonthResult(input: GetMonthResultInput = {}): Promise<ReadResult<GetMonthResultOutput>> {
+    return this.#read<GetMonthResultOutput>("kiipu.month_result_get", input);
+  }
+
+  /**
+   * Reads how the month is going, piece by piece and with the same figures each read would give: new clients, collected, proposals sent and accepted, deals won, appointments and the ledger result. A piece the person's role does not see, or whose read is off, comes back in `unavailable`.
+   *
+   * `crm.month_summary_get` v1 — scope `crm.month_summary_get@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async getMonthSummary(input: GetMonthSummaryInput = {}): Promise<ReadResult<GetMonthSummaryOutput>> {
+    return this.#read<GetMonthSummaryOutput>("crm.month_summary_get", input);
   }
 }

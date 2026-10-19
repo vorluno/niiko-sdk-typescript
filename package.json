@@ -1,7 +1,7 @@
 {
   "name": "@vorluno/niiko-sdk",
-  "version": "0.2.0",
-  "description": "Generated client for the niiko actions API — it exposes verbs, not rows.",
+  "version": "0.3.0",
+  "description": "Generated client for the niiko API — verbs and a few declared reads, never tables.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
