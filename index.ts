@@ -404,6 +404,78 @@ export interface GetMonthSummaryOutput {
 /** The reasons `crm.month_summary_get` declares. One outside this list is a server fault, not a state. */
 export type GetMonthSummaryReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person";
 
+export interface SearchCatalogInput {
+  query?: string;
+}
+
+export interface SearchCatalogOutput {
+  found: boolean;
+  offerings: { name: string; summary: string; price: string | null; currency: string | null; unit: "month" | "project" | "hour" | "unit" | "page" | null }[];
+  detail: { description: string | null; attributes: Record<string, unknown> } | null;
+}
+
+/** The reasons `miira.catalog_search` declares. One outside this list is a server fault, not a state. */
+export type SearchCatalogReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person";
+
+export interface SearchKnowledgeInput {
+  query: string;
+}
+
+export interface SearchKnowledgeOutput {
+  found: boolean;
+  fragments: { document: string; section: string | null; text: string }[];
+}
+
+/** The reasons `miira.knowledge_search` declares. One outside this list is a server fault, not a state. */
+export type SearchKnowledgeReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person";
+
+export interface GetClientBalanceInput {
+  client: string;
+}
+
+export interface GetClientBalanceOutput {
+  client: string;
+  standing: "owes" | "up_to_date" | "never_invoiced" | "not_a_client";
+  outstandingTotal: string | null;
+  currency: string | null;
+  nextInstallment: { dueOn: string; amount: string } | null;
+}
+
+/** The reasons `kiipu.client_balance_get` declares. One outside this list is a server fault, not a state. */
+export type GetClientBalanceReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person" | "ambiguous" | "not_found";
+
+export interface GetClientOverviewInput {
+  client: string;
+}
+
+export interface GetClientOverviewOutput {
+  client: string;
+  owedTotal: string;
+  openInvoices: { number: string | null; balance: string; currency: string; dueOn: string | null }[];
+  conversations: { channel: string; lastInboundOn: string | null }[];
+  noActivity: boolean;
+}
+
+/** The reasons `crm.client_overview_get` declares. One outside this list is a server fault, not a state. */
+export type GetClientOverviewReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person" | "ambiguous" | "not_found";
+
+export interface GetAgentConfigInput {
+
+}
+
+export interface GetAgentConfigOutput {
+  configured: boolean;
+  persona: { name: string; role: string; business: string; tone: string; language: string } | null;
+  script: { position: number; question: string; field: string | null; kind: "capture" | "qualify"; points: number; required: boolean; atClose: boolean; options: string[] | null; optionsByGroup: Record<string, unknown> | null; onlyIf: { field: string; value: string } | null }[];
+  stages: { name: string; fromPoints: number; toPoints: number; qualified: boolean }[];
+  responses: { when: string; text: string }[];
+  documents: { clientType: string; document: string; points: number; optional: boolean }[];
+  milestones: { name: string; markedWhen: "required_questions" | "document" | "manual" }[];
+}
+
+/** The reasons `miira.agent_config_get` declares. One outside this list is a server fault, not a state. */
+export type GetAgentConfigReason = "invalid_input" | "role_forbidden" | "grant_off" | "reads_need_a_person";
+
 export interface NiikoOptions {
   /** The workspace API key, for ACTIONS. Shown ONCE, when created in Settings. */
   apiKey?: string;
@@ -711,5 +783,65 @@ export class Niiko {
    */
   async getMonthSummary(input: GetMonthSummaryInput = {}): Promise<ReadResult<GetMonthSummaryOutput>> {
     return this.#read<GetMonthSummaryOutput>("crm.month_summary_get", input);
+  }
+
+  /**
+   * Searches the published catalog by words and returns up to 5 active public offerings with name, summary, price, currency and what the price is per; with exactly one match, also its whole description and attributes. Internal, paused and discontinued offerings never come back.
+   *
+   * `miira.catalog_search` v1 — scope `miira.catalog_search@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async searchCatalog(input: SearchCatalogInput = {}): Promise<ReadResult<SearchCatalogOutput>> {
+    return this.#read<SearchCatalogOutput>("miira.catalog_search", input);
+  }
+
+  /**
+   * Searches the knowledge base the team loaded for the sales agent (manuals, cases, answers to objections) by words, and returns up to 6 fragments with their document and section. Only active documents that finished indexing. It is not the source of a price: that is miira.catalog_search.
+   *
+   * `miira.knowledge_search` v1 — scope `miira.knowledge_search@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async searchKnowledge(input: SearchKnowledgeInput): Promise<ReadResult<SearchKnowledgeOutput>> {
+    return this.#read<SearchKnowledgeOutput>("miira.knowledge_search", input);
+  }
+
+  /**
+   * Reads how much ONE client named by name owes in total, as the ledger has it, and their next installment due. A client never invoiced comes back as `never_invoiced`, never as up to date; a lead or a churned client, as `not_a_client`. With several matches it refuses with `ambiguous`; with none, `not_found`.
+   *
+   * `kiipu.client_balance_get` v1 — scope `kiipu.client_balance_get@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async getClientBalance(input: GetClientBalanceInput): Promise<ReadResult<GetClientBalanceOutput>> {
+    return this.#read<GetClientBalanceOutput>("kiipu.client_balance_get", input);
+  }
+
+  /**
+   * Reads where ONE client named by name stands: their open invoices with balance and since when they are owed, the total owed, and which channels you have talked on with the day of their last message. Never what was said, and no phone or email.
+   *
+   * `crm.client_overview_get` v1 — scope `crm.client_overview_get@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async getClientOverview(input: GetClientOverviewInput): Promise<ReadResult<GetClientOverviewOutput>> {
+    return this.#read<GetClientOverviewOutput>("crm.client_overview_get", input);
+  }
+
+  /**
+   * Reads how the sales agent is configured today: its persona, the script in order with what each question saves and scores, the funnel stages, the reference responses, the documents asked per client type and the milestones. With `configured: false` the workspace still has the demo setup. Changes nothing.
+   *
+   * `miira.agent_config_get` v1 — scope `miira.agent_config_get@1`. Read-only.
+   *
+   * Needs an OAuth **accessToken** with that scope (an API key gets `reads_need_a_person`), and the workspace having
+   * switched the read on. It answers with what the person behind the token can see.
+   */
+  async getAgentConfig(input: GetAgentConfigInput = {}): Promise<ReadResult<GetAgentConfigOutput>> {
+    return this.#read<GetAgentConfigOutput>("miira.agent_config_get", input);
   }
 }
